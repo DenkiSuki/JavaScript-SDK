@@ -106,6 +106,7 @@ const keys = [
     { "name": "Numpad 0", "wooting": 0x62, "razer": 0x63 },
     { "name": "Numpad .", "wooting": 0x63, "razer": 0x68 }
 ];
+
 const wooting_to_name = {}; Object.values(keys).forEach(key => wooting_to_name[key.wooting] = key.name);
 const razer_to_wooting = {}; Object.values(keys).forEach(key => razer_to_wooting[key.razer] = key.wooting);
 const nuphy_to_wooting = {}; Object.values(keys).forEach(key => nuphy_to_wooting[key.nuphy ?? key.wooting] = key.wooting);
@@ -257,6 +258,13 @@ const KEY_OEM_1 = 0x403;
 const KEY_OEM_2 = 0x404;
 const KEY_OEM_3 = 0x405;
 const KEY_FN = 0x409;
+
+const tartarusProDefaultMap = [
+	KEY_1, KEY_2, KEY_3, KEY_4, KEY_5,
+	KEY_TAB, KEY_Q, KEY_W, KEY_E, KEY_R,
+	KEY_CAPS_LOCK, KEY_A, KEY_S, KEY_D, KEY_F,
+	KEY_LSHIFT, KEY_Z, KEY_X, KEY_C, KEY_SPACE
+	];
 
 const layout_keychron_q1_he = [ 6, 15,
     KEY_ESCAPE,    KEY_F1,    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
@@ -441,6 +449,41 @@ class AsProviderRazerHuntsmanV3 extends AsProvider
                         scancode: analogsense.razerScancodeToHidScancode(scancode),
                         value: value / 255
                     });
+                }
+                handler(active_keys);
+            }
+        };
+    }
+
+    stopListening()
+    {
+        this.dev.oninputreport = undefined;
+    }
+}
+
+class AsProviderRazerTartarusPro extends AsProvider
+{
+    static populateFilters(filters)
+    {
+        filters.push({ vendorId: 0x1532, productId: 0x0244, reportId: 6});
+    }
+	
+    startListening(handler)
+    {
+        this.dev.oninputreport = function(event)
+        {
+            if (event.reportId == 6)
+            {
+                const active_keys = [];
+                for (let i = 0; i < event.data.byteLength-3; i++ )
+                {
+                    const value = event.data.getUint8(i);
+					if (value>0){
+						active_keys.push({
+							scancode: tartarusProDefaultMap[i],
+							value: value / 255
+						});
+					}
                 }
                 handler(active_keys);
             }
@@ -807,6 +850,7 @@ window.analogsense = {
         AsProviderWooting,
         AsProviderRazerHuntsman,
         AsProviderRazerHuntsmanV3,
+        AsProviderRazerTartarusPro,
         AsProviderNuphy,
         AsProviderDrunkdeer,
         AsProviderKeychron,
