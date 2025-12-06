@@ -12,6 +12,7 @@ JavaScript API for analog keyboard input.
 - Razer Huntsman V3 Pro<sup>R</sup>
 - Razer Huntsman V3 Pro Mini<sup>R</sup>
 - Razer Huntsman V3 Pro Tenkeyless<sup>R</sup>
+- Razer Tartarus Pro<sup>R</sup>
 - Keychron Q1 HE<sup>P, F</sup>
 - Keychron Q3 HE<sup>P, F</sup>
 - Keychron Q5 HE<sup>P, F</sup>
@@ -68,3 +69,4 @@ OEM-specific keys are mapped in the `0x4__` range:
 - `0x405` = Profile 3
 - `0x408` = Profile Switch
 - `0x409` = Function Key (Fn)
+
